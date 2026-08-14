@@ -1,0 +1,35 @@
+# Build outputs
+.pio/
+build/
+dist/
+*.bin
+*.elf
+*.map
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# IDE
+.vscode/
+.idea/
+
+# Secrets / local configuration
+.env
+.env.*
+*.pem
+*.key
+secrets/
+config/local.*
+
+# Runtime data
+*.db
+*.sqlite
+runtime-data/
+logs/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,9 @@
+[project]
+name = "binesh-os"
+version = "0.1.0"
+description = "B.I.N.E.S.H. OS portable edge platform"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
