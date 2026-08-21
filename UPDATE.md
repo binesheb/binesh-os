@@ -4,14 +4,14 @@ B.I.N.E.S.H. OS is designed to support both deliberate operator-controlled upgra
 
 ## Manual repository update
 
-For a development or source deployment:
+For a development or source deployment, use the checked-in updater and dependency bootstrapper:
 
 ```bash
-git status --short
-git fetch origin --tags
-git pull --ff-only origin main
-python -m pytest
+tools/update.sh
+tools/bootstrap.sh
 ```
+
+`tools/update.sh` fetches and fast-forwards from `origin/main` only and refuses to overwrite local changes. `tools/bootstrap.sh` installs the repository's declared Python dependencies and runs the portable test suite.
 
 Do not use `git reset --hard` as an update mechanism. Resolve or commit local changes first so an upgrade never silently discards local work.
 
@@ -24,13 +24,13 @@ pio run -e esp32 --target upload
 
 ## Automatic updates
 
-Automatic updates must be platform-aware rather than one generic self-updater:
+Automatic updates must be platform-aware and use **GitHub `main` as the only automatic update source**:
 
-- **ESP32:** OTA updates should use versioned, integrity-checked release artifacts and retain a recovery/manual flash path.
-- **Raspberry Pi/Linux:** managed deployments should check a configured release channel, verify the selected artifact, stage the update, run a health check, and only then switch the active runtime.
+- **ESP32:** OTA support should check the repository's accepted `main` update channel, verify integrity and compatibility, and retain a recovery/manual flash path.
+- **Raspberry Pi/Linux:** managed deployments should fetch only `origin/main`, refuse local divergence, stage the update, install declared dependencies, run validation and a health check, and only then switch the active runtime.
 - **Development checkouts:** do not self-update automatically. Use the manual fast-forward-only workflow above.
 
-Unattended updates must never force-overwrite local source changes or configuration, and a failed update must leave a known-good runtime available for rollback.
+Unattended updates must never force-overwrite local source changes or configuration, pull from feature/development branches, or bypass validation. A failed update must leave a known-good runtime available for rollback where the platform supports it.
 
 ## Release policy
 
