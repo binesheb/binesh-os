@@ -11,6 +11,7 @@ All notable changes to B.I.N.E.S.H. OS are recorded here.
 
 ### Fixed
 - Normalize naive event timestamps as UTC before serialization to avoid host-local timezone drift.
+- Refuse manual updates unless the checkout is on `main`, preventing an accidental merge of `origin/main` into a feature branch.
 
 ## 0.1.0
 
