@@ -18,8 +18,20 @@ if [[ "$current_branch" != "main" ]]; then
 fi
 
 require_clean_tree
+previous_head="$(git rev-parse HEAD)"
 
 git fetch --prune origin main
 git merge --ff-only origin/main
 
-echo "B.I.N.E.S.H. OS updated to $(git rev-parse --short HEAD)."
+if [[ "$(git rev-parse HEAD)" == "$previous_head" ]]; then
+  echo "B.I.N.E.S.H. OS is already up to date at $(git rev-parse --short HEAD)."
+  exit 0
+fi
+
+if ! tools/bootstrap.sh; then
+  echo "Validation failed after update; rolling back to $(git rev-parse --short "$previous_head")." >&2
+  git reset --hard "$previous_head"
+  exit 1
+fi
+
+echo "B.I.N.E.S.H. OS updated and validated at $(git rev-parse --short HEAD)."
