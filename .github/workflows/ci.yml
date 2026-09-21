@@ -69,6 +69,9 @@ jobs:
           path: release
       - name: Generate checksum
         run: sha256sum release/firmware.bin > release/firmware.bin.sha256
+      - name: Verify release checksum
+        working-directory: release
+        run: sha256sum -c firmware.bin.sha256
       - name: Publish release
         uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
         with:
