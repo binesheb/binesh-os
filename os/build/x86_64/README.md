@@ -20,8 +20,10 @@ sudo apt-get install -y debootstrap grub-efi-amd64-bin grub-pc-bin xorriso squas
 
 ## Build
 
+The repository file is intentionally runnable through bash so GitHub's source-file API does not depend on preserving an executable-bit mode:
+
 ```bash
-sudo ./os/build/x86_64/build-image.sh
+sudo bash ./os/build/x86_64/build-image.sh
 ```
 
 Output:
