@@ -1,6 +1,16 @@
+from importlib.util import module_from_spec, spec_from_file_location
+from pathlib import Path
+
 import pytest
 
-from os.installer.plan import Disk, make_plan
+MODULE = Path(__file__).resolve().parents[1] / "os" / "installer" / "plan.py"
+spec = spec_from_file_location("binesh_installer_plan", MODULE)
+module = module_from_spec(spec)
+assert spec.loader is not None
+spec.loader.exec_module(module)
+
+Disk = module.Disk
+make_plan = module.make_plan
 
 
 def test_install_plan_is_explicit():
