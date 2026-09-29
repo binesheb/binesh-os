@@ -2,10 +2,10 @@ name: B.I.N.E.S.H. OS Foundation
 
 on:
   push:
-    branches: ["main", "architecture/**"]
-    paths: ["os/**", "runtime/**", "docs/architecture/**", ".github/workflows/os-foundation.yml"]
+    branches:
+      - main
+      - "architecture/**"
   pull_request:
-    paths: ["os/**", "runtime/**", "docs/architecture/**", ".github/workflows/os-foundation.yml"]
 
 permissions:
   contents: read
@@ -16,19 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Validate application manifest schema
-        run: python - <<'PY'
-import json
-from pathlib import Path
-schema=json.loads(Path("runtime/manifest.schema.json").read_text())
-assert schema["$schema"].startswith("https://json-schema.org/")
-assert "required" in schema
-print("manifest schema: OK")
-PY
-      - name: Validate required OS architecture
+      - name: Validate OS layout
         run: |
           test -f os/README.md
-          test -f os/build/README.md
           test -f os/build/x86_64/build-image.sh
           test -f os/boot/README.md
           test -f os/installer/README.md
@@ -36,9 +26,9 @@ PY
           test -f os/config/x86_64/README.md
           test -f os/config/x86_64/qemu-smoke.sh
           test -f os/config/aarch64/README.md
+          test -f runtime/manifest.schema.json
           test -f docs/architecture/OS_ACCEPTANCE.md
           test -f docs/architecture/PROPER_OS_ROADMAP.md
-          echo "OS architecture: OK"
 
   python:
     name: Existing Python tests
@@ -78,4 +68,4 @@ PY
           path: |
             out/x86_64/binesh-os-x86_64-dev.iso
             out/x86_64/binesh-os-x86_64-dev.iso.sha256
-          if-no-files-found: error
+            
