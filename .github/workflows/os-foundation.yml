@@ -52,7 +52,7 @@ jobs:
       - name: Install image build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y debootstrap grub-efi-amd64-bin grub-pc-bin xorriso squashfs-tools
+          sudo apt-get install -y debootstrap grub-efi-amd64-bin grub-pc-bin xorriso squashfs-tools qemu-system-x86
       - name: Build image
         run: sudo bash os/build/x86_64/build-image.sh
       - name: Verify artifact
@@ -61,6 +61,11 @@ jobs:
           test -s out/x86_64/binesh-os-x86_64-dev.iso.sha256
           sha256sum -c out/x86_64/binesh-os-x86_64-dev.iso.sha256
           file out/x86_64/binesh-os-x86_64-dev.iso
+      - name: QEMU boot smoke test
+        run: |
+          set -o pipefail
+          timeout 90s qemu-system-x86_64 -m 2048 -cdrom out/x86_64/binesh-os-x86_64-dev.iso -serial stdio -display none -no-reboot 2>&1 | tee out/x86_64/qemu-boot.log
+          grep -q "B.I.N.E.S.H. OS" out/x86_64/qemu-boot.log
       - name: Upload development ISO
         uses: actions/upload-artifact@v4
         with:
