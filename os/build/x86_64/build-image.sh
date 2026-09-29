@@ -15,17 +15,13 @@ require_cmd() {
   }
 }
 
-[[ $EUID -eq 0 ]] || {
-  echo "[BINESH] Run the image builder as root (sudo)." >&2
-  exit 1
-}
-
+[[ $EUID -eq 0 ]] || { echo "[BINESH] Run as root (sudo)." >&2; exit 1; }
 for c in debootstrap grub-mkrescue xorriso mksquashfs; do require_cmd "$c"; done
 
 rm -rf "$WORK" "$OUT"
-mkdir -p "$WORK/rootfs" "$WORK/iso/boot/grub" "$OUT"
+mkdir -p "$WORK/rootfs" "$WORK/iso/boot/grub" "$WORK/iso/live" "$OUT"
 
-echo "[BINESH] Bootstrapping Ubuntu $SUITE $ARCH root filesystem..."
+echo "[BINESH] Bootstrapping Ubuntu $SUITE $ARCH..."
 debootstrap --arch="$ARCH" "$SUITE" "$WORK/rootfs" "$MIRROR"
 
 mount --bind /dev "$WORK/rootfs/dev"
@@ -108,7 +104,7 @@ echo "binesh-os" > "$WORK/rootfs/etc/hostname"
 chroot "$WORK/rootfs" /bin/bash -eux <<'CHROOT'
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
-apt-get install -y --no-install-recommends   systemd systemd-sysv dbus sudo   linux-image-generic linux-firmware   grub-efi-amd64 grub-efi-amd64-bin   ca-certificates iproute2 iputils-ping bash coreutils util-linux kmod
+apt-get install -y --no-install-recommends   systemd systemd-sysv dbus sudo   linux-image-generic linux-firmware   live-boot   ca-certificates iproute2 iputils-ping bash coreutils util-linux kmod
 systemctl enable binesh-firstboot.service
 useradd --create-home --shell /bin/bash binesh || true
 echo 'binesh:binesh' | chpasswd
@@ -119,21 +115,18 @@ CHROOT
 
 KERNEL="$(find "$WORK/rootfs/boot" -maxdepth 1 -type f -name 'vmlinuz-*' | sort -V | tail -1)"
 INITRD="$(find "$WORK/rootfs/boot" -maxdepth 1 -type f -name 'initrd.img-*' | sort -V | tail -1)"
-[[ -n "$KERNEL" && -n "$INITRD" ]] || {
-  echo "[BINESH] Kernel/initramfs were not generated." >&2
-  exit 1
-}
+[[ -n "$KERNEL" && -n "$INITRD" ]] || { echo "[BINESH] Kernel/initramfs missing." >&2; exit 1; }
 
 cp "$KERNEL" "$WORK/iso/boot/vmlinuz"
 cp "$INITRD" "$WORK/iso/boot/initrd"
-mksquashfs "$WORK/rootfs" "$WORK/iso/boot/rootfs.squashfs" -comp xz -noappend
+mksquashfs "$WORK/rootfs" "$WORK/iso/live/filesystem.squashfs" -comp xz -noappend
 
 cat > "$WORK/iso/boot/grub/grub.cfg" <<'EOF'
 set timeout=3
 set default=0
 
 menuentry "B.I.N.E.S.H. OS (development)" {
-    linux /boot/vmlinuz boot=binesh root=/dev/ram0 quiet
+    linux /boot/vmlinuz boot=live quiet
     initrd /boot/initrd
 }
 EOF
@@ -141,5 +134,4 @@ EOF
 grub-mkrescue -o "$OUT/binesh-os-x86_64-dev.iso" "$WORK/iso"
 sha256sum "$OUT/binesh-os-x86_64-dev.iso" > "$OUT/binesh-os-x86_64-dev.iso.sha256"
 
-echo "[BINESH] Image ready:"
-echo "  $OUT/binesh-os-x86_64-dev.iso"
+echo "[BINESH] Image ready: $OUT/binesh-os-x86_64-dev.iso"
