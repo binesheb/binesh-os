@@ -3,17 +3,9 @@ name: B.I.N.E.S.H. OS Foundation
 on:
   push:
     branches: ["main", "architecture/**"]
-    paths:
-      - "os/**"
-      - "runtime/**"
-      - "docs/architecture/**"
-      - ".github/workflows/os-foundation.yml"
+    paths: ["os/**", "runtime/**", "docs/architecture/**", ".github/workflows/os-foundation.yml"]
   pull_request:
-    paths:
-      - "os/**"
-      - "runtime/**"
-      - "docs/architecture/**"
-      - ".github/workflows/os-foundation.yml"
+    paths: ["os/**", "runtime/**", "docs/architecture/**", ".github/workflows/os-foundation.yml"]
 
 permissions:
   contents: read
@@ -28,8 +20,7 @@ jobs:
         run: python - <<'PY'
 import json
 from pathlib import Path
-p=Path("runtime/manifest.schema.json")
-schema=json.loads(p.read_text())
+schema=json.loads(Path("runtime/manifest.schema.json").read_text())
 assert schema["$schema"].startswith("https://json-schema.org/")
 assert "required" in schema
 print("manifest schema: OK")
@@ -45,7 +36,6 @@ PY
           test -f os/config/aarch64/README.md
           test -f docs/architecture/OS_ACCEPTANCE.md
           test -f docs/architecture/PROPER_OS_ROADMAP.md
-          echo "OS architecture: OK"
 
   python:
     name: Existing Python tests
@@ -56,6 +46,6 @@ PY
         with:
           python-version: "3.12"
       - name: Install test dependencies
-        run: python -m pip install -e ".[test]"
+        run: python -m pip install -e ".[dev]"
       - name: Run tests
         run: python -m pytest -q
