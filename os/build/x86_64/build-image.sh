@@ -105,7 +105,7 @@ chroot "$WORK/rootfs" /bin/bash -eux <<'CHROOT'
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get install -y --no-install-recommends   systemd systemd-sysv dbus sudo   linux-image-generic linux-firmware   live-boot   ca-certificates iproute2 iputils-ping bash coreutils util-linux kmod
-systemctl enable binesh-firstboot.service
+systemctl enable binesh-firstboot.service binesh-boot-banner.service
 useradd --create-home --shell /bin/bash binesh || true
 echo 'binesh:binesh' | chpasswd
 usermod -aG sudo binesh
