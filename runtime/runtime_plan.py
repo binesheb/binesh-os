@@ -32,8 +32,11 @@ def plan_runtime(info: PackageInfo, capabilities: set[str]) -> RuntimePlan:
     if info.runtime == "windows-compatibility" and "windows-vm" in capabilities:
         return RuntimePlan("virtualize", "windows-vm", "Windows compatibility runtime is unavailable; VM is available")
 
-    if info.runtime == "macos-compatibility":
-        return RuntimePlan("inspect", "macos-package", "macOS packages require a compatible macOS environment")
+    if info.runtime == "macos-package":
+        return RuntimePlan("inspect", "macos-package", "macOS package requires a compatible macOS environment")
+
+    if info.runtime == "windows-compatibility":
+        return RuntimePlan("inspect", "windows-compatibility", "Windows runtime is unavailable")
 
     if info.runtime in {"archive", "linux-package"}:
         return RuntimePlan("install", info.runtime, "package requires an installer/package manager")
