@@ -126,7 +126,7 @@ set timeout=3
 set default=0
 
 menuentry "B.I.N.E.S.H. OS (development)" {
-    linux /boot/vmlinuz boot=live quiet
+    linux /boot/vmlinuz boot=live console=ttyS0,115200 systemd.show_status=true
     initrd /boot/initrd
 }
 EOF
