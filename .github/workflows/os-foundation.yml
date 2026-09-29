@@ -26,6 +26,9 @@ jobs:
           test -f os/config/x86_64/README.md
           test -f os/config/x86_64/qemu-smoke.sh
           test -f os/config/aarch64/README.md
+          test -f os/config/aarch64/build-image.sh
+          test -f os/installer/INSTALLER_DESIGN.md
+          test -f os/installer/validate-target.sh
           test -f runtime/manifest.schema.json
           test -f docs/architecture/OS_ACCEPTANCE.md
           test -f docs/architecture/PROPER_OS_ROADMAP.md
