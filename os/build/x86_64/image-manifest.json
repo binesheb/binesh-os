@@ -1,0 +1,16 @@
+{
+  "product": "B.I.N.E.S.H. OS",
+  "id": "binesh-os",
+  "channel": "development",
+  "target": "x86_64",
+  "firmware": ["uefi"],
+  "format": "iso",
+  "boot_mode": "live",
+  "base_family": "ubuntu",
+  "base_release": "noble",
+  "release_policy": {
+    "signed": false,
+    "rollback": false,
+    "production": false
+  }
+}

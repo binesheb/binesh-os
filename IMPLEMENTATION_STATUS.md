@@ -1,144 +1,66 @@
-# BINESH OS — Implementation Status
+# B.I.N.E.S.H. OS — Implementation Status
 
-> Living master checklist for tracking implementation, testing, and release readiness.
+Updated: 2026-09-30
 
-## Status Legend
+## Current project definition
 
-- [ ] Pending
-- [-] In progress
-- [x] Completed
-- [!] Blocked
-- [T] Testing / validation required
+B.I.N.E.S.H. OS is being developed as a **proper installable operating system platform**.
 
-## Core Platform
-- [ ] Finalize modular architecture
-- [ ] Configuration management
-- [ ] Database abstraction layer
-- [ ] API framework
-- [ ] Event/message system
-- [ ] Central logging
-- [ ] Error handling standards
-- [ ] Plugin/module framework
+Primary targets:
 
-## Device Management
-- [ ] Device registration
-- [ ] Device authentication
-- [ ] Device inventory
-- [ ] Device groups and tags
-- [ ] Online/offline detection
-- [ ] Heartbeat service
-- [ ] Device health reporting
+- x86_64 PC/server
+- ARM64/Raspberry Pi
+- ESP32 embedded runtime
 
-## Windows Remote Agent
-### Agent
-- [ ] Agent architecture
-- [ ] Windows installer
-- [ ] Windows Service mode
-- [ ] Auto-start
-- [ ] Secure registration
-- [ ] Heartbeat
+The Linux kernel is the initial desktop/server kernel foundation. B.I.N.E.S.H. owns the system integration, services, application/runtime layer, management interfaces and user experience.
 
-### Remote Command Center
-- [ ] PowerShell execution
-- [ ] CMD execution
-- [ ] Command timeout controls
-- [ ] Output streaming
-- [ ] Error reporting
-- [ ] Command history
-- [ ] Command approval/policy layer
+## Current state
 
-### Windows Management
-- [ ] System information
-- [ ] CPU monitoring
-- [ ] RAM monitoring
-- [ ] Disk monitoring
-- [ ] Network monitoring
-- [ ] Process management
-- [ ] Windows service management
-- [ ] Application launcher
-- [ ] Restart
-- [ ] Shutdown
+| Area | State | Notes |
+|---|---|---|
+| OS architecture | Implemented | Architecture reset is documented in docs/architecture |
+| x86_64 target | Implemented | Target and acceptance contract defined |
+| ARM64 target | Foundation | Raspberry Pi boundary defined |
+| ESP32 runtime | Existing | Retained as embedded target |
+| ISO builder | Implemented | Development x86_64 image builder exists |
+| Live initramfs | Implemented | live-boot path used by development image |
+| B.I.N.E.S.H. identity | Implemented | Release metadata, banner and first-boot service |
+| QEMU boot test | In progress | CI builds the image and will boot it under QEMU |
+| Installer | Architecture | Safety and virtual-disk-first design documented |
+| Application detection | Implemented | ELF/APK/PE/DMG/archive/package classification |
+| Runtime planning | Implemented | Capability-aware, non-executing runtime selection |
+| Desktop | Planned | Starts after reliable boot/install milestone |
+| Secure updates | Architecture | Release policy defined; implementation pending |
+| Voice | Foundation | Service architecture exists |
+| Attendance | Foundation | Portable service exists |
+| Transport | Foundation | Planned integration |
+| Diagnostics | Foundation | Expanding with OS health layer |
+| Production release | Not ready | No signed production image exists |
 
-## Linux Agent
-- [ ] Agent architecture
-- [ ] Secure registration
-- [ ] Remote command execution
-- [ ] System monitoring
-- [ ] Service management
+## Acceptance rule
 
-## Raspberry Pi
-- [ ] Device registration
-- [ ] GPIO integration
-- [ ] Hardware monitoring
-- [ ] Remote command support
-- [ ] OTA update mechanism
+A capability is not considered complete because its code exists.
 
-## ESP32 Integration
-- [ ] Device provisioning
-- [ ] MQTT/HTTP/WebSocket communication
-- [ ] OTA firmware updates
-- [ ] Diagnostics
-- [ ] Sensor/device management
+For OS features, completion requires:
 
-## Dashboard
-- [ ] Responsive UI foundation
-- [ ] Device list
-- [ ] Device details
-- [ ] Live status
-- [ ] Remote terminal
-- [ ] Command history
-- [ ] System metrics
-- [ ] Alerts and notifications
+1. implementation
+2. documentation
+3. automated tests where practical
+4. CI validation
+5. real hardware or VM validation appropriate to the feature
+6. recovery/security considerations
 
-## Security
-- [ ] User authentication
-- [ ] Device identity/tokens
-- [ ] Token rotation
-- [ ] TLS
-- [ ] Role-based permissions
-- [ ] Command allowlists/policies
-- [ ] Audit logs
-- [ ] Secrets management
+## Immediate milestone
 
-## Monitoring & Audit
-- [ ] Central metrics
-- [ ] Device telemetry
-- [ ] Alert rules
-- [ ] Notification channels
-- [ ] Audit trail
-- [ ] Log retention
+> Produce and successfully boot the first B.I.N.E.S.H. x86_64 development ISO in QEMU and verify that B.I.N.E.S.H. userspace has started.
 
-## API & Integrations
-- [ ] REST API
-- [ ] WebSocket API
-- [ ] MQTT integration
-- [ ] Webhooks
-- [ ] API documentation
+After that:
 
-## Deployment & Updates
-- [ ] Development environment
-- [ ] Production deployment
-- [ ] Container support
-- [ ] Configuration templates
-- [ ] Backup/restore
-- [ ] Self-update mechanism
-
-## Testing & Release
-- [ ] Unit tests
-- [ ] Integration tests
-- [ ] Windows Agent tests
-- [ ] Security testing
-- [ ] Performance testing
-- [ ] End-to-end testing
-- [ ] Release checklist
-
----
-
-## Maintenance Rule
-
-No feature is considered complete until:
-1. Implementation is finished.
-2. Relevant tests are completed.
-3. Documentation is updated.
-4. This checklist is updated.
-5. Any security impact is reviewed.
+1. writable virtual-disk installer
+2. UEFI installation/recovery
+3. system/device management
+4. desktop
+5. application manager
+6. ARM64/Raspberry Pi image
+7. secure update system
+8. production release pipeline
