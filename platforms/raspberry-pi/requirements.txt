@@ -1,9 +1,2 @@
-[project]
-name = "binesh-os"
-version = "0.1.0"
-description = "B.I.N.E.S.H. OS portable edge platform"
-requires-python = ">=3.10"
-
-[tool.pytest.ini_options]
-pythonpath = ["."]
-testpaths = ["tests"]
+# The Raspberry Pi runtime currently uses Python standard-library modules only.
+# Add platform-specific third-party dependencies here when they are introduced.
