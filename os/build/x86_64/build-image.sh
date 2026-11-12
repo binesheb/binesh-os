@@ -30,14 +30,14 @@ mount -t proc proc "$WORK/rootfs/proc"
 mount -t sysfs sys "$WORK/rootfs/sys"
 mount -t tmpfs tmpfs "$WORK/rootfs/run"
 
-cleanup() {
+cleanup() (
   set +e
   umount -lf "$WORK/rootfs/run"
   umount -lf "$WORK/rootfs/sys"
   umount -lf "$WORK/rootfs/proc"
   umount -lf "$WORK/rootfs/dev/pts"
   umount -lf "$WORK/rootfs/dev"
-}
+)
 trap cleanup EXIT
 
 if [[ -e "$WORK/rootfs/etc/resolv.conf" || -L "$WORK/rootfs/etc/resolv.conf" ]]; then
@@ -128,6 +128,7 @@ INITRD="$(find "$WORK/rootfs/boot" -maxdepth 1 -type f -name 'initrd.img-*' | so
 
 cp "$KERNEL" "$WORK/iso/boot/vmlinuz"
 cp "$INITRD" "$WORK/iso/boot/initrd"
+cleanup
 mksquashfs "$WORK/rootfs" "$WORK/iso/live/filesystem.squashfs" -comp xz -noappend
 
 cat > "$WORK/iso/boot/grub/grub.cfg" <<'EOF'
