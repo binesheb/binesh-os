@@ -29,6 +29,16 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - run: python -m pip install --upgrade pip
       - run: python -m pip install -e '.[dev]'
+      - name: Verify installed wheel includes all source packages
+        run: |
+          wheel_dir="$RUNNER_TEMP/binesh-os-wheel"
+          venv_dir="$RUNNER_TEMP/binesh-os-wheel-venv"
+          mkdir -p "$wheel_dir"
+          python -m pip wheel --no-deps . --wheel-dir "$wheel_dir"
+          python -m venv "$venv_dir"
+          "$venv_dir/bin/python" -m pip install --no-deps "$wheel_dir"/*.whl
+          cd "$RUNNER_TEMP"
+          "$venv_dir/bin/python" -c "from core.event import Event; from runtime.package_detect import detect_package; from runtime.runtime_plan import plan_runtime; from services.attendance.engine import Punch, process_punch"
       - run: python -m pip check
       - run: python -m pytest
 
