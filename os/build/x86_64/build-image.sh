@@ -40,7 +40,11 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# debootstrap may leave resolv.conf as a dangling symlink. Replace it so the\n# host resolver configuration is copied into the chroot as a regular file.\nrm -f "$WORK/rootfs/etc/resolv.conf"\ncp -L /etc/resolv.conf "$WORK/rootfs/etc/resolv.conf"
+if [[ -e "$WORK/rootfs/etc/resolv.conf" || -L "$WORK/rootfs/etc/resolv.conf" ]]; then
+  cp -a "$WORK/rootfs/etc/resolv.conf" "$WORK/resolv.conf.original"
+fi
+rm -f "$WORK/rootfs/etc/resolv.conf"
+cp -L /etc/resolv.conf "$WORK/rootfs/etc/resolv.conf"
 
 cat > "$WORK/rootfs/etc/apt/sources.list" <<EOF
 deb $MIRROR $SUITE main restricted universe multiverse
@@ -112,6 +116,11 @@ usermod -aG sudo binesh
 apt-get clean
 rm -rf /var/lib/apt/lists/*
 CHROOT
+
+rm -f "$WORK/rootfs/etc/resolv.conf"
+if [[ -e "$WORK/resolv.conf.original" || -L "$WORK/resolv.conf.original" ]]; then
+  cp -a "$WORK/resolv.conf.original" "$WORK/rootfs/etc/resolv.conf"
+fi
 
 KERNEL="$(find "$WORK/rootfs/boot" -maxdepth 1 -type f -name 'vmlinuz-*' | sort -V | tail -1)"
 INITRD="$(find "$WORK/rootfs/boot" -maxdepth 1 -type f -name 'initrd.img-*' | sort -V | tail -1)"
