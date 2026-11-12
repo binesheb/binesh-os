@@ -40,7 +40,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-cp /etc/resolv.conf "$WORK/rootfs/etc/resolv.conf"
+# debootstrap may leave resolv.conf as a dangling symlink. Replace it so the\n# host resolver configuration is copied into the chroot as a regular file.\nrm -f "$WORK/rootfs/etc/resolv.conf"\ncp -L /etc/resolv.conf "$WORK/rootfs/etc/resolv.conf"
 
 cat > "$WORK/rootfs/etc/apt/sources.list" <<EOF
 deb $MIRROR $SUITE main restricted universe multiverse
