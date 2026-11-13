@@ -2,157 +2,239 @@
 
 **Binary Intelligent Network for Enhanced Strategic Handling**
 
-A modular, open-source edge operating platform designed to run the same operational services across ESP32, Raspberry Pi/Linux, and future runtimes.
+> **B.I.N.E.S.H. OS is becoming a proper, installable operating system.**
 
-> **GitHub is the source of truth.** The repository is the product specification, implementation, documentation, discussion space, change history, and release record.
+B.I.N.E.S.H. is an open-source operating system and edge platform intended to boot on PCs and ARM64 systems, run applications and services, manage hardware, provide local automation and intelligence, and extend the same service model to embedded devices such as ESP32.
 
-## Why B.I.N.E.S.H. OS?
+**GitHub is the source of truth.** The accepted architecture, source code, build definitions, tests, documentation, issues, pull requests and releases live in this repository.
 
-B.I.N.E.S.H. OS is being built as a reusable platform for real-world automation and operational systems: deterministic control, attendance, transport, device management, synchronization, diagnostics, local APIs, dashboards, OTA updates, and hardware integrations.
+## Project direction
 
-It is deliberately not limited to one microcontroller. The architecture separates portable domain logic from platform and hardware adapters.
+The project started as an ESP32-oriented operating layer. That is no longer the primary definition.
+
+B.I.N.E.S.H. OS is now organized as a complete OS stack:
+
+```text
+Platform firmware
+      |
+UEFI / board boot
+      |
+Bootloader
+      |
+Linux kernel
+      |
+Base system
+      |
+B.I.N.E.S.H. system layer
+      |
+B.I.N.E.S.H. application/runtime layer
+      |
+Desktop / CLI / API / Web / Voice
+      |
+Applications + automation + enterprise services
+```
+
+The initial desktop/server implementation will use the Linux kernel and established low-level components. B.I.N.E.S.H. owns the distribution integration, system behavior, user experience, application model, security policy, management layer and platform services. This lets us build a real OS without pretending that every foundational component needs to be reinvented.
+
+## What B.I.N.E.S.H. should become
+
+- Bootable from USB/ISO.
+- Installable to a physical disk.
+- Bootable in a virtual machine.
+- Support x86_64 PCs.
+- Support ARM64/Raspberry Pi.
+- Provide a desktop and command-line environment.
+- Provide a package and application manager.
+- Run native Linux applications and supported portable runtimes.
+- Provide containers and sandboxed applications.
+- Add compatibility runtimes when technically and legally appropriate.
+- Provide secure system and application updates with rollback.
+- Provide device and hardware management.
+- Provide local APIs and web administration.
+- Provide voice as an OS service.
+- Provide deterministic automation.
+- Provide attendance, transport and operational services.
+- Integrate local AI through the BNSH AI ecosystem.
+- Extend the same service/event model to embedded B.I.N.E.S.H. runtimes.
 
 ## Platform targets
 
-- **ESP32 / ESP32-S3** — real-time I/O, sensors, relays, RFID, biometrics, displays and field controllers.
-- **Raspberry Pi / Linux** — gateways, local servers, databases, dashboards, protocol bridges and heavier workloads.
-- **Future runtimes** — designed behind stable interfaces so additional platforms can be added without rewriting services.
+### x86_64
 
-## Architecture
+Primary development target for a general-purpose installable OS.
+
+Acceptance target: boot a reproducible B.I.N.E.S.H. image under QEMU/UEFI, then install it to a virtual disk and reboot into the installed system.
+
+### ARM64 / Raspberry Pi
+
+First-class edge/server target.
+
+Acceptance target: boot and install a supported ARM64 image on Raspberry Pi hardware while sharing the same portable B.I.N.E.S.H. service contracts.
+
+### ESP32
+
+ESP32 remains a supported **embedded runtime**, not a desktop Linux installation target. It provides deterministic hardware control, sensors, displays, RFID/biometrics, relays and field automation under the common B.I.N.E.S.H. event/service model.
+
+## Application platform
+
+B.I.N.E.S.H. will include a capability-aware Universal Application Manager.
+
+Potential execution paths include:
 
 ```text
-                         B.I.N.E.S.H. OS
-                                |
-          +---------------------+---------------------+
-          |                     |                     |
-       CORE API             SERVICES              SHELL/API
-          |                     |                     |
-   config / events       attendance             CLI / Web / REST
-   logging / security    transport              OLED / admin
-   scheduler             automation
-   storage               synchronization
-   diagnostics           diagnostics
-          |                     |
-          +---------- PLATFORM ABSTRACTION ----------+
-                         |             |
-                      ESP32        Raspberry Pi
-                         |             |
-                     hardware       Linux/USB/GPIO
-                         |             |
-                         +------+------+
-                                |
-                         MQTT / HTTP / WS
-                                |
-                         External systems
+Native Linux
+   |
+Container / sandbox
+   |
+Language runtime
+   |
+Compatibility runtime
+   |
+Virtual machine / emulation
 ```
 
-## Repository principles
+Supported formats are capability-dependent. Examples include native Linux packages, AppImage, OCI containers, Python/Node/JVM applications, WebAssembly and Android APKs when a suitable runtime is installed. Windows executables may use a compatibility runtime where supported. macOS packages such as DMG are not assumed to be executable on Linux; the manager must identify the package and report the available compatibility path rather than pretending compatibility exists.
 
-1. **GitHub is authoritative.** If it is not documented or merged here, it is not an official platform capability.
-2. **Portable logic first.** Business rules must not depend directly on ESP-IDF, Arduino, Python GPIO libraries, or other platform-specific APIs.
-3. **Deterministic by design.** Given the same inputs, configuration and state, a service should produce the same result.
-4. **Offline first.** Network loss must degrade gracefully rather than silently losing operational events.
-5. **Auditable changes.** Important state transitions and corrections must be traceable.
-6. **Secure by default.** Credentials, signing keys and device secrets never belong in Git.
-7. **Community through GitHub.** Ideas belong in Discussions/Issues, implementation belongs in Pull Requests, and releases belong in Git tags/releases.
-8. **Documentation is part of the product.** New behavior requires documentation and tests.
+## Core capabilities
+
+### Operating system
+
+- Boot and recovery
+- Kernel integration
+- Hardware discovery
+- Drivers
+- Storage
+- Networking
+- Users and permissions
+- Services
+- Logging
+- Power management
+- Diagnostics
+- Secure updates
+
+### Application platform
+
+- Package metadata
+- Package installation/removal
+- Dependency resolution
+- Runtime detection
+- Sandboxing
+- Containers
+- Application permissions
+- Application launchers
+- Application audit records
+
+### B.I.N.E.S.H. services
+
+- Automation
+- Attendance
+- Transport
+- Synchronization
+- Diagnostics
+- Voice
+- Device management
+- Enterprise API integration
 
 ## Repository layout
 
 ```text
 binesh-os/
-├── core/                 Portable OS primitives
-├── services/             Attendance, transport, sync, diagnostics, automation
-├── platforms/            ESP32 and Raspberry Pi/Linux runtimes
-├── drivers/              Hardware and protocol adapters
-├── interfaces/           API, CLI, web and display interfaces
-├── storage/              Persistent/offline storage abstractions
-├── security/             Authentication, signing and security primitives
-├── docs/                 Architecture, modules, API and operations
-├── examples/             Minimal deployable examples
-├── tools/                Developer and release tooling
-├── tests/                Portable and platform tests
-├── .github/              CI, issue templates and contribution automation
-└── LICENSE
+├── os/                  Bootable OS build and installer
+│   ├── boot/
+│   ├── config/
+│   │   ├── x86_64/
+│   │   └── aarch64/
+│   ├── installer/
+│   └── system/
+├── core/                Portable B.I.N.E.S.H. primitives
+├── services/            Operational services
+├── runtime/             Universal application/runtime model
+├── platforms/           ESP32 and Raspberry Pi implementations
+├── drivers/             Hardware/protocol adapters
+├── interfaces/          API, CLI, web and display interfaces
+├── storage/             Persistent/offline storage
+├── security/            Identity, signing and authorization
+├── docs/                Architecture and operations
+├── examples/            Examples and reference applications
+├── tools/               Build, test and release tooling
+├── tests/               Automated tests
+└── .github/             CI, issue templates and contribution workflow
 ```
 
-## Getting started
+## Build philosophy
 
-### ESP32
+The OS must be reproducible.
 
-Install PlatformIO, select the required board environment, then build and flash the ESP32 runtime. See [`docs/getting-started/esp32.md`](docs/getting-started/esp32.md).
+Generated artifacts do not belong in Git. Build inputs, configuration, patches, scripts, manifests and version pins do.
 
-### Raspberry Pi
+The desktop/server build will produce bootable artifacts through a controlled pipeline. Embedded targets may use an embedded Linux image builder where appropriate. Buildroot is useful for focused embedded images, while Yocto/OpenEmbedded can provide a scalable multi-board build framework; these are implementation tools, not the identity of B.I.N.E.S.H.
 
-Use the Linux runtime directly or deploy the containerized runtime. See [`docs/getting-started/raspberry-pi.md`](docs/getting-started/raspberry-pi.md).
-
-### Development
+## Development
 
 ```bash
 git clone https://github.com/binesheb/binesh-os.git
 cd binesh-os
-```
-
-Run the portable test suite before making changes:
-
-```bash
 python -m pytest
 ```
 
-## Development model
+During the OS bootstrap phase, a Linux build host is the preferred environment for image generation. VM/CI builds will be used so that changes can be validated without physical hardware.
 
-The project uses a GitHub-first workflow:
+## GitHub-first development
 
 ```text
 Idea
-  ↓
-GitHub Discussion / Issue
-  ↓
+  |
+Discussion / Issue
+  |
 Architecture decision
-  ↓
-Branch / Fork
-  ↓
-Implementation + tests + docs
-  ↓
+  |
+Fork or branch
+  |
+Implementation
+  |
+Tests + documentation
+  |
 Pull Request
-  ↓
-Review + CI
-  ↓
-Merge to main
-  ↓
-Release / tag
+  |
+CI
+  |
+Review
+  |
+main
+  |
+Release
+  |
+Installer / ISO / image
 ```
 
-Anyone should be able to:
-
-- open an Issue for a bug or concrete engineering task;
-- start a Discussion for an idea or architecture proposal;
-- fork the repository;
-- create a feature branch;
-- submit a Pull Request;
-- improve documentation;
-- contribute examples, drivers or tests;
-- review proposed changes;
-- suggest alternative implementations.
-
-See [`CONTRIBUTING.md`](CONTRIBUTING.md).
+Anyone can propose features, hardware support, application runtimes, drivers, UI changes, documentation, tests or architecture changes through GitHub.
 
 ## Source-of-truth policy
 
-The repository's `main` branch represents the current accepted implementation. `docs/architecture/` represents the accepted architecture. Pull Requests are the controlled path for code changes. GitHub Issues and Discussions are the public engineering backlog and proposal space.
+The accepted `main` branch is authoritative.
 
-Local generated files, binaries, credentials, device databases and deployment secrets are **never** considered source-of-truth artifacts.
+- If a feature is not merged, it is not an official capability.
+- If an architecture proposal is not accepted, it is not an architecture guarantee.
+- Release artifacts must correspond to tagged source.
+- Generated binaries are release outputs, not source.
+- Secrets and signing keys never belong in the repository.
 
 ## Security
 
-Do not commit API keys, passwords, certificates with private keys, device credentials, production databases, or OTA signing secrets. Report security vulnerabilities privately according to [`SECURITY.md`](SECURITY.md).
+B.I.N.E.S.H. must be secure by default. Privileged operations require authorization. Applications must not automatically receive unrestricted host access. Release artifacts should be signed and update mechanisms must support integrity verification and recovery.
 
-## Status
+See [SECURITY.md](SECURITY.md).
 
-**Phase: Foundation / v0.1 architecture**
+## Roadmap
 
-The interfaces are intentionally being established before hardware-specific implementations are locked in. This allows ESP32 and Raspberry Pi to share the same service contracts.
+The detailed OS roadmap is in [docs/architecture/PROPER_OS_ROADMAP.md](docs/architecture/PROPER_OS_ROADMAP.md).
+
+The immediate milestone is:
+
+> **Boot a reproducible B.I.N.E.S.H. x86_64 development image in QEMU and reach B.I.N.E.S.H. userspace.**
+
+Then we build the installer, system services, desktop, application platform and ARM64/Raspberry Pi image.
 
 ## License
 
-Apache License 2.0. See [`LICENSE`](LICENSE).
+Apache License 2.0. See [LICENSE](LICENSE).
